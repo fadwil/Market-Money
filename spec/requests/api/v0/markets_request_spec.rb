@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Market Money API" do
+describe "market endpoints" do
   it "returns a list of markets" do
     create_list(:market, 3)
 
@@ -102,13 +102,13 @@ describe "Market Money API" do
   end
 
   it "returns a 404 status and an error message" do
-    get "/api/v0/markets/123123123123"
-
-    expect(response).to_not be_successful
+    get "/api/v0/markets/1111111111111111"
 
     expect(response.status).to eq(404)
 
-    error_response = JSON.parse(response.body, symbolize_names: true)
-    expect(error_response[:errors]).to contain_exactly({ detail: "Couldn't find Market with 'id'=123123123123" })
+    wrong_id = JSON.parse(response.body, symbolize_names: true)
+    expect(wrong_id).to have_key(:errors)
+    expect(wrong_id[:errors][0]).to have_key(:details)
+    expect(wrong_id[:errors][0][:details]).to eq("Couldn't find Market with 'id'=1111111111111111")
   end
 end
