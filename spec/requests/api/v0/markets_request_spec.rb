@@ -14,7 +14,7 @@ describe "Market Money API" do
 
     markets.each do |market|
       expect(market).to have_key(:id)
-      expect(market[:id]).to be_an(String)
+      expect(market[:id]).to be_a(String)
 
       expect(market).to have_key(:type)
       expect(market[:type]).to be_a(String)
