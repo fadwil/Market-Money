@@ -12,6 +12,6 @@ class Market < ApplicationRecord
   validates :lon, presence: true
 
   def vendor_count
-    vendors.count
+    self.vendors.count
   end
 end
