@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :market_vendor do
-    market { "" }
-    vendor { "" }
+    association :market
+    association :vendor
   end
 end
