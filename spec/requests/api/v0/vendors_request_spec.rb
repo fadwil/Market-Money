@@ -164,4 +164,25 @@ RSpec.describe "vendor endpoints" do
       expect(error_response[:errors][0]).to have_key(:details)
     end
   end
+
+  describe "vendor delete" do
+    it "deletes the vendor" do
+      vendor = create(:vendor)
+
+      expect{ delete "/api/v0/vendors/#{vendor.id}" }.to change(Vendor, :count).by(-1)
+
+      expect(response.status).to eq(204)
+      expect(response.body).to be_blank
+    end
+
+    it "returns a 404 status and an error message" do
+      delete "/api/v0/vendors/123123123"
+
+      expect(response.status).to eq(404)
+
+      error_response = JSON.parse(response.body, symbolize_names: true)
+      expect(error_response).to have_key(:errors)
+      expect(error_response[:errors][0]).to have_key(:details)
+    end
+  end
 end
