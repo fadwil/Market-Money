@@ -39,6 +39,7 @@ RSpec.describe "vendor endpoints" do
     it "returns a 404 status and an error message" do
       get "/api/v0/vendors/123123123123"
 
+      expect(response).to_not be_successful
       expect(response.status).to eq(404)
 
       wrong_id = JSON.parse(response.body, symbolize_names: true)
@@ -60,7 +61,9 @@ RSpec.describe "vendor endpoints" do
       headers = {"CONTENT_TYPE" => "application/json"}
       post "/api/v0/vendors", headers: headers, params: JSON.generate(vendor: vendor_attributes)
 
+      expect(response).to be_successful
       expect(response.status).to eq(201)
+
       vendor = JSON.parse(response.body, symbolize_names: true)[:data]
 
       expect(vendor).to have_key(:id)
@@ -94,6 +97,7 @@ RSpec.describe "vendor endpoints" do
 
       post "/api/v0/vendors", headers: headers, params: JSON.generate(vendor: vendor_attributes)
       
+      expect(response).to_not be_successful
       expect(response.status).to eq(400)
 
       error_response = JSON.parse(response.body, symbolize_names: true)
@@ -114,6 +118,7 @@ RSpec.describe "vendor endpoints" do
       
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(updated_attributes)
 
+      expect(response).to be_successful
       expect(response.status).to eq(200)
 
       updated_vendor = JSON.parse(response.body, symbolize_names: true)[:data]
@@ -139,7 +144,8 @@ RSpec.describe "vendor endpoints" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
       patch "/api/v0/vendors/#{invalid_vendor_id}", headers: headers, params: JSON.generate(updated_attributes)
-
+      
+      expect(response).to_not be_successful
       expect(response.status).to eq(404)
 
       error_response = JSON.parse(response.body, symbolize_names: true)
@@ -156,7 +162,8 @@ RSpec.describe "vendor endpoints" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
       patch "/api/v0/vendors/#{valid_vendor.id}", headers: headers, params: JSON.generate(updated_attributes)
-
+      
+      expect(response).to_not be_successful
       expect(response.status).to eq(400)
 
       error_response = JSON.parse(response.body, symbolize_names: true)
@@ -171,13 +178,15 @@ RSpec.describe "vendor endpoints" do
 
       expect{ delete "/api/v0/vendors/#{vendor.id}" }.to change(Vendor, :count).by(-1)
 
+      expect(response).to be_successful
       expect(response.status).to eq(204)
       expect(response.body).to be_blank
     end
 
     it "returns a 404 status and an error message" do
       delete "/api/v0/vendors/123123123"
-
+      
+      expect(response).to_not be_successful
       expect(response.status).to eq(404)
 
       error_response = JSON.parse(response.body, symbolize_names: true)

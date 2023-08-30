@@ -103,7 +103,8 @@ describe "market endpoints" do
 
   it "returns a 404 status and an error message" do
     get "/api/v0/markets/1111111111111111"
-
+    
+    expect(response).to_not be_successful
     expect(response.status).to eq(404)
 
     wrong_id = JSON.parse(response.body, symbolize_names: true)
