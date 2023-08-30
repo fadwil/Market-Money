@@ -4,7 +4,6 @@ class Api::V0::MarketsController < ApplicationController
   end
 
   def show
-    # market = Market.find_by(id: params[:id])
     begin
       render json: MarketSerializer.new(Market.find(params[:id]))
     rescue ActiveRecord::RecordNotFound => e
