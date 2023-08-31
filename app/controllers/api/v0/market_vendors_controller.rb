@@ -9,16 +9,28 @@ class Api::V0::MarketVendorsController < ApplicationController
     end
   end
 
-  private
-    def market_vendor_params
-      params.require(:market_vendor).permit(:market_id, :vendor_id)
+  def destroy
+    begin
+      market_vendor = MarketVendor.find_by!(market_vendor_params)
+      render json: market_vendor.destroy, status: :no_content
+    rescue ActiveRecord::RecordNotFound => e
+      custom_error_message(e)
     end
+  end
 
-    def custom_error_message(error)
-      if error.message.include?("must exist")
-        render json: ErrorSerializer.new(error).serialized_json, status: :not_found
-      elsif error.message.include?("already exists")
-        render json: ErrorSerializer.new(error).serialized_json, status: :unprocessable_entity
-      end
+  private
+
+  def market_vendor_params
+    params.require(:market_vendor).permit(:market_id, :vendor_id)
+  end
+
+  def custom_error_message(error)
+    if error.message.include?("must exist")
+      render json: ErrorSerializer.new(error).serialized_json, status: :not_found
+    elsif error.message.include?("Couldn't find MarketVendor")
+      render json: ErrorSerializer.new(error).serialized_doesnt_exist(market_vendor_params), status: :not_found
+    elsif error.message.include?("already exists")
+      render json: ErrorSerializer.new(error).serialized_json, status: :unprocessable_entity
     end
+  end
 end

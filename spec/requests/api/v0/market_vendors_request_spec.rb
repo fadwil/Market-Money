@@ -131,4 +131,46 @@ RSpec.describe "MarketVendors", type: :request do
       expect(error_response[:errors][0][:details]).to eq("Validation failed: Market vendor association already exists")
     end
   end
+
+  describe "marketvendor delete" do
+    before do
+      @market = create(:market)
+      @vendor = create(:vendor)
+      @market_vendor = MarketVendor.create!(market_id: @market.id, vendor_id: @vendor.id)
+    end
+
+    it "deletes a marketvendor association" do
+      headers = { "CONTENT_TYPE" => "application/json" }
+      params = { market_id: @market.id, vendor_id: @vendor.id }
+
+      expect(MarketVendor.exists?(params)).to eq(true)
+
+      delete "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: params) 
+
+      expect(MarketVendor.exists?(params)).to eq(false)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(204)
+      expect(response.body).to be_blank
+    end
+
+    it "returns a 404 status and error message" do
+      bad_market_id = 1111111111111
+      bad_vendor_id = 2222222222222
+
+      headers = { "CONTENT_TYPE" => "application/json" }
+      params = { market_id: bad_market_id, vendor_id: bad_vendor_id }
+
+      delete "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: params) 
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      invalid = JSON.parse(response.body, symbolize_names: true)
+
+      expect(invalid).to have_key(:errors)
+      expect(invalid[:errors][0]).to have_key(:details)
+      expect(invalid[:errors][0][:details]).to eq("Couldn't find MarketVendor with market_id=#{bad_market_id} and vendor_id=#{bad_vendor_id}")
+    end
+  end
 end
