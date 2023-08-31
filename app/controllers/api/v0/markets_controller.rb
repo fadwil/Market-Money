@@ -10,4 +10,18 @@ class Api::V0::MarketsController < ApplicationController
       render json: ErrorSerializer.new(e).serialized_json, status: :not_found 
     end
   end
+
+  def search
+    begin
+      render json: MarketSerializer.new(Market.search(search_params)), status: :ok
+    rescue SearchError => e
+      render json: ErrorSerializer.new(e).serialized_json, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def search_params
+    params.permit(:state, :city, :name) 
+  end
 end
