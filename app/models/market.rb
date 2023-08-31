@@ -28,7 +28,11 @@ class Market < ApplicationRecord
   private
 
   def self.filter(scope, field, value)
-    value.present? ? scope.where("#{field} ILIKE ?", "%#{value}%") : scope
+    if value.present?
+      scope.where("#{field} ILIKE ?", "%#{value}%")
+    else
+      scope
+    end
   end
 
   def self.validate_params(params)
