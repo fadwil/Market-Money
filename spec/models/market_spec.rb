@@ -31,4 +31,62 @@ RSpec.describe Market, type: :model do
       expect(market.vendor_count).to eq(3)
     end
   end
+
+  describe '.search' do
+    it "returns markets based on the provided state parameter" do
+      market1 = create(:market, state: "Florida")
+      market2 = create(:market, state: "California")
+
+      results = Market.search(state: "Florida")
+
+      expect(results).to include(market1)
+      expect(results).not_to include(market2)
+    end
+
+    
+    
+    it "returns markets based on the provided state and city parameters" do
+      market1 = create(:market, state: "Florida", city: "Gainesville")
+      market2 = create(:market, state: "Florida", city: "Tampa")
+      market3 = create(:market, state: "California", city: "Los Angeles")
+  
+      results = Market.search(state: "Florida", city: "Gainesville")
+  
+      expect(results).to include(market1)
+      expect(results).not_to include(market2, market3)
+    end
+  
+    it "returns markets based on the provided state, city, and name parameters" do
+      market1 = create(:market, state: "Florida", city: "Gainesville", name: "Downtown Market")
+      market2 = create(:market, state: "Florida", city: "Gainesville", name: "Haile Market")
+      market3 = create(:market, state: "California", city: "Los Angeles", name: "Farmers Market")
+  
+      results = Market.search(state: "Florida", city: "Gainesville", name: "Downtown Market")
+  
+      expect(results).to include(market1)
+      expect(results).not_to include(market2, market3)
+    end
+  
+    it "returns markets based on the provided state and name parameters" do
+      market1 = create(:market, state: "Florida", name: "Downtown Market")
+      market2 = create(:market, state: "Florida", name: "Haile Market")
+      market3 = create(:market, state: "California", name: "Farmers Market")
+  
+      results = Market.search(state: "Florida", name: "Downtown Market")
+  
+      expect(results).to include(market1)
+      expect(results).not_to include(market2, market3)
+    end
+  
+    it "returns markets based on the provided name parameter" do
+      market1 = create(:market, name: "Downtown Market")
+      market2 = create(:market, name: "Haile Market")
+      market3 = create(:market, name: "Farmers Market")
+  
+      results = Market.search(name: "Downtown Market")
+  
+      expect(results).to include(market1)
+      expect(results).not_to include(market2, market3)
+    end
+  end
 end
